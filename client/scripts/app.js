@@ -1,5 +1,5 @@
 
-var main = function(toDoObjects) {
+var main = function (toDoObjects) {
     'use strict';
 
     var toDos = fromObjectsToArray(toDoObjects);
@@ -8,8 +8,8 @@ var main = function(toDoObjects) {
     var new_tags = "";
 
 
-    $('.tabs a span').toArray().forEach(function(element) {
-        $(element).on('click', function() {
+    $('.tabs a span').toArray().forEach(function (element) {
+        $(element).on('click', function () {
             var $element = $(element)
             var $content
 
@@ -25,14 +25,14 @@ var main = function(toDoObjects) {
 
             } else if ($element.parent().is(':nth-child(2)')) {
                 $content = $('<ul>')
-                toDos.forEach(function(todo) {
+                toDos.forEach(function (todo) {
                     $content.append($('<li>').text(todo));
                 });
 
             } else if ($element.parent().is(':nth-child(3)')) {
                 var organizedByTag = organizeByTags(toDoObjects);
 
-                organizedByTag.forEach(function(tag) {
+                organizedByTag.forEach(function (tag) {
                     var $tagName = $("<h3>").text(tag.name);
                     $content = $("<ul>");
 
@@ -48,18 +48,18 @@ var main = function(toDoObjects) {
             } else if ($element.parent().is(':nth-child(4)')) {
                 $content = $('<form>');
                 $content.append($("<h4>").text("Описание"));
-                $content.append($('<input>').attr({ 
-                    type: 'text', 
-                    placeholder: 'Введите описание задачи..', 
-                    value: new_description, 
-                    id: 'new_description' 
+                $content.append($('<input>').attr({
+                    type: 'text',
+                    placeholder: 'Введите описание задачи..',
+                    value: new_description,
+                    id: 'new_description'
                 }));
                 $content.append($("<h4>").text("Категории"));
-                $content.append($('<input>').attr({ 
-                    type: 'text', 
-                    placeholder: 'Введите категории задачи..', 
-                    value: new_tags, 
-                    id: 'new_tags' 
+                $content.append($('<input>').attr({
+                    type: 'text',
+                    placeholder: 'Введите категории задачи..',
+                    value: new_tags,
+                    id: 'new_tags'
                 }));
                 $content.append($('<button>').addClass('add_toDo'));
 
@@ -70,25 +70,32 @@ var main = function(toDoObjects) {
         });
     });
 
-// обработчики изменений строк в input
-    $('main .content').on('change', '#new_description', function() {
+    // обработчики изменений строк в input
+    $('main .content').on('change', '#new_description', function () {
         new_description = $('#new_description').val();
         return false;
     });
 
-    $('main .content').on('change', '#new_tags', function() {
+    $('main .content').on('change', '#new_tags', function () {
         new_tags = $('#new_tags').val();
         return false;
     });
 
-// обработчик нажатия кнопки добавления
-    $('main .content').on('click', '.add_toDo', function() {
+    // обработчик нажатия кнопки добавления
+    $('main .content').on('click', '.add_toDo', function () {
         if (new_description != "") {
             var tags = new_tags.split(",");
             if (tags.length != 0) {
                 toDoObjects.push({ "description": new_description, "tags": tags });
+
+                // этот обратный вызов выполняется при ответе сервера
+                $.post("todos", {}, function (response) {
+                    console.log("Мы отправили данные и получили ответ сервера!");
+                    console.log(response);
+                });
+
                 toDos = fromObjectsToArray(toDoObjects);
-                
+
                 $('#new_description').val("");
                 new_description = "";
                 $('#new_tags').val("");
@@ -98,14 +105,14 @@ var main = function(toDoObjects) {
 
         return false;
     });
-    
+
 
     $('.tabs a:first-child span').trigger('click');
 
 }
 
 
-$(document).ready(function() {
+$(document).ready(function () {
     $.getJSON("../todos.json", function (toDoObjects) {
         main(toDoObjects);
     });
