@@ -1,6 +1,6 @@
 
-var express = require("express"),
-    http = require("http"),
+var express = require('express'),
+    http = require('http'),
     app = express(),
     toDos = [
         {
@@ -29,8 +29,10 @@ var express = require("express"),
         }
     ];
 
-app.use(express.static(__dirname + "/client"));
 http.createServer(app).listen(3000);
+
+app.use(express.static(__dirname + "/client"));
+app.use(express.urlencoded({ extended: true }));
 
 // этот маршрут замещает наш файл todos.json в примере из части 5
 app.get("/todos.json", function (req, res) {
@@ -38,7 +40,9 @@ app.get("/todos.json", function (req, res) {
 });
 
 app.post("/todos", function (req, res) {
-    console.log("Данные были отправлены на сервер!");
-    // простой объект отправлен обратно
+    var newToDo = req.body;
+    console.log(newToDo);
+    toDos.push(newToDo);
+
     res.json({ "message": "Вы размещаетесь на сервере!" });
 });

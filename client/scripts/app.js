@@ -86,15 +86,14 @@ var main = function (toDoObjects) {
         if (new_description != "") {
             var tags = new_tags.split(",");
             if (tags.length != 0) {
-                toDoObjects.push({ "description": new_description, "tags": tags });
+                var newToDo = { "description": new_description, "tags": tags };
 
                 // этот обратный вызов выполняется при ответе сервера
-                $.post("todos", {}, function (response) {
-                    console.log("Мы отправили данные и получили ответ сервера!");
+                $.post("todos", newToDo, function (response) {
                     console.log(response);
+                    toDoObjects.push(newToDo);
+                    toDos = fromObjectsToArray(toDoObjects);
                 });
-
-                toDos = fromObjectsToArray(toDoObjects);
 
                 $('#new_description').val("");
                 new_description = "";
